@@ -41,7 +41,7 @@ function mm_ddSelectDocuments($tvs = '', $roles = '', $templates = '', $parentId
 		$output .= includeJsCss($widgetDir.'ddselectdocuments.css', 'html');
 		$output .= includeJsCss($widgetDir.'jquery-migrate-3.0.0.min.js', 'html', 'jquery-migrate', '3.0.0');
 		$output .= includeJsCss($pluginDir.'js/jquery-ui-1.10.3.min.js', 'html', 'jquery-ui', '1.10.3');
-		$output .= includeJsCss($widgetDir.'jquery.ddMultipleInput-1.2.1.min.js', 'html', 'jquery.ddMultipleInput', '1.2.1');
+		$output .= includeJsCss($widgetDir.'jQuery.ddMultipleInput-1.3.2.min.js', 'html', 'jquery.ddMultipleInput', '1.3.2');
 		
 		$e->output($output);
 	}else if ($e->name == 'OnDocFormRender'){
