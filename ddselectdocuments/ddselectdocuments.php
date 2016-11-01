@@ -8,15 +8,15 @@
  * @uses PHP >= 5.4.
  * @uses MODXEvo.plugin.ManagerManager >= 0.6.
  * 
- * @param $tvs {string_commaSeparated} — TVs names that the widget is applied to. @required
+ * @param $fields {string_commaSeparated} — TVs names that the widget is applied to. @required
  * @param $roles {string_commaSeparated} — Roles that the widget is applied to (when this parameter is empty then widget is applied to the all roles). Default: ''.
  * @param $templates {string_commaSeparated} — Templates IDs for which the widget is applying (empty value means the widget is applying to all templates). Default: ''.
  * @param $parentIds {string_commaSeparated} — Parent documents IDs. Default: '0'.
  * @param $depth {integer} — Depth of search. Default: 1.
  * @param $filter {separated string} — Filter clauses, separated by '&' between pairs and by '=' between keys and values. For example, 'template=15&published=1' means to choose the published documents with template id=15. Default: ''.
- * @param $max {integer} — The largest number of elements that can be selected by user (“0” means selection without a limit). Default: 0.
- * @param $labelMask {string} — Template to be used while rendering elements of the document selection list. It is set as a string containing placeholders for document fields and TVs. Also, there is the additional placeholder “[+title+]” that is substituted with either “menutitle” (if defined) or “pagetitle”. Default: '[+title+] ([+id+])'.
- * @param $allowDoubling {boolean} — Allows to select duplicates values. Default: false.
+ * @param $maxSelectedItems {integer} — The largest number of elements that can be selected by user (“0” means selection without a limit). Default: 0.
+ * @param $listItemLabelMask {string} — Template to be used while rendering elements of the document selection list. It is set as a string containing placeholders for document fields and TVs. Also, there is the additional placeholder “[+title+]” that is substituted with either “menutitle” (if defined) or “pagetitle”. Default: '[+title+] ([+id+])'.
+ * @param $allowDuplicates {boolean} — Allows to select duplicates values. Default: false.
  * 
  * @event OnDocFormPrerender
  * @event OnDocFormRender
@@ -27,15 +27,15 @@
  */
 
 function mm_ddSelectDocuments(
-	$tvs = '',
+	$fields = '',
 	$roles = '',
 	$templates = '',
 	$parentIds = '0',
 	$depth = 1,
 	$filter = '',
-	$max = 0,
-	$labelMask = '[+title+] ([+id+])',
-	$allowDoubling = false
+	$maxSelectedItems = 0,
+	$listItemLabelMask = '[+title+] ([+id+])',
+	$allowDuplicates = false
 ){
 	if (!useThisRule($roles, $templates)){return;}
 	
@@ -57,25 +57,25 @@ function mm_ddSelectDocuments(
 	}else if ($e->name == 'OnDocFormRender'){
 		global $mm_current_page;
 		
-		$tvs = tplUseTvs($mm_current_page['template'], $tvs);
-		if ($tvs == false){return;}
+		$fields = tplUseTvs($mm_current_page['template'], $fields);
+		if ($fields == false){return;}
 		
 		$filter = ddTools::explodeAssoc($filter, '&', '=');
 		
 		//Необходимые поля
-		preg_match_all('~\[\+([^\+\]]*?)\+\]~', $labelMask, $matchField);
+		preg_match_all('~\[\+([^\+\]]*?)\+\]~', $listItemLabelMask, $matchField);
 		
-		$fields = array_unique(array_merge(
+		$listDocs_fields = array_unique(array_merge(
 			array_keys($filter),
 			['pagetitle', 'id'],
 			$matchField[1]
 		));
 		
 		//Если среди полей есть ключевое слово «title»
-		if (($title_pos = array_search('title', $fields)) !== false){
+		if (($listDocs_fields_titlePos = array_search('title', $listDocs_fields)) !== false){
 			//Удалим его, добавим «menutitle»
-			unset($fields[$title_pos]);
-			$fields = array_unique(array_merge($fields, ['menutitle']));
+			unset($listDocs_fields[$listDocs_fields_titlePos]);
+			$listDocs_fields = array_unique(array_merge($listDocs_fields, ['menutitle']));
 		}
 		
 		//Рекурсивно получает все необходимые документы
@@ -145,24 +145,24 @@ function mm_ddSelectDocuments(
 		}}
 		
 		//Получаем все дочерние документы
-		$docs = ddGetDocs(
+		$listDocs = ddGetDocs(
 			explode(',', $parentIds),
 			$filter,
 			$depth,
-			$labelMask,
-			$fields
+			$listItemLabelMask,
+			$listDocs_fields
 		);
 		
-		if (count($docs) == 0){return;}
+		if (count($listDocs) == 0){return;}
 		
-		$jsonDocs = json_encode($docs, JSON_UNESCAPED_UNICODE);
+		$listDocs = json_encode($listDocs, JSON_UNESCAPED_UNICODE);
 		
 		$output .= '//---------- mm_ddSelectDocuments :: Begin -----'.PHP_EOL;
 		
-		foreach ($tvs as $tv){
+		foreach ($fields as $field){
 			$output .=
 '
-$j("#tv'.$tv['id'].'").ddMultipleInput({source: '.$jsonDocs.', max: '.(int) $max.', allowDoubling: '.(int) $allowDoubling.'});
+$j("#tv'.$field['id'].'").ddMultipleInput({source: '.$listDocs.', max: '.(int) $maxSelectedItems.', allowDoubling: '.(int) $allowDuplicates.'});
 ';
 		}
 		
