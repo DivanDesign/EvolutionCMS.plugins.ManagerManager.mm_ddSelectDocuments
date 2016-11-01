@@ -5,6 +5,7 @@
  * 
  * @desc A widget for ManagerManager that makes selection of documents ids easier.
  * 
+ * @uses PHP >= 5.4.
  * @uses MODXEvo.plugin.ManagerManager >= 0.6.
  * 
  * @param $tvs {string_commaSeparated} — TVs names that the widget is applied to. @required
@@ -66,7 +67,7 @@ function mm_ddSelectDocuments(
 		
 		$fields = array_unique(array_merge(
 			array_keys($filter),
-			array('pagetitle', 'id'),
+			['pagetitle', 'id'],
 			$matchField[1]
 		));
 		
@@ -74,19 +75,19 @@ function mm_ddSelectDocuments(
 		if (($title_pos = array_search('title', $fields)) !== false){
 			//Удалим его, добавим «menutitle»
 			unset($fields[$title_pos]);
-			$fields = array_unique(array_merge($fields, array('menutitle')));
+			$fields = array_unique(array_merge($fields, ['menutitle']));
 		}
 		
 		//Рекурсивно получает все необходимые документы
 		if (!function_exists('ddGetDocs')){function ddGetDocs(
-			$parentIds = array(0),
-			$filter = array(),
+			$parentIds = [0],
+			$filter = [],
 			$depth = 1,
 			$labelMask = '[+pagetitle+] ([+id+])',
-			$fields = array('pagetitle', 'id')
+			$fields = ['pagetitle', 'id']
 		){
 			//Получаем дочерние документы текущего уровня
-			$docs = array();
+			$docs = [];
 			
 			//Перебираем всех родителей
 			foreach ($parentIds as $parent){
@@ -100,7 +101,7 @@ function mm_ddSelectDocuments(
 				}
 			}
 			
-			$result = array();
+			$result = [];
 			
 			//Если что-то есть
 			if (count($docs) > 0){
@@ -120,17 +121,17 @@ function mm_ddSelectDocuments(
 							$tmp = ddTools::parseText('[+pagetitle+] ([+id+])', $val, '[+', '+]', false);
 						}
 						
-						$result[] = array(
+						$result[] = [
 							'label' => $tmp,
 							'value' => $val['id']
-						);
+						];
 					}
 					
 					//Если ещё надо двигаться глубже
 					if ($depth > 1){
 						//Сливаем результат с дочерними документами
 						$result = array_merge($result, ddGetDocs(
-							array($val['id']),
+							[$val['id']],
 							$filter,
 							$depth - 1,
 							$labelMask,
