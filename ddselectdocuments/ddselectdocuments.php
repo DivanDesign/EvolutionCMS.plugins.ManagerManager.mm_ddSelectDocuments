@@ -155,18 +155,7 @@ function mm_ddSelectDocuments(
 		
 		if (count($docs) == 0){return;}
 		
-		if (version_compare(PHP_VERSION, '5.4.0') >= 0){
-			$jsonDocs = json_encode($docs, JSON_UNESCAPED_UNICODE);
-		}else{
-			$jsonDocs = preg_replace_callback(
-				'/\\\\u([0-9a-f]{4})/i',
-				create_function(
-					'$matches',
-					'$sym = mb_convert_encoding(pack("H*", $matches[1]), "UTF-8", "UTF-16"); return $sym;'
-				),
-				json_encode($docs)
-			);
-		}
+		$jsonDocs = json_encode($docs, JSON_UNESCAPED_UNICODE);
 		
 		$output .= '//---------- mm_ddSelectDocuments :: Begin -----'.PHP_EOL;
 		
