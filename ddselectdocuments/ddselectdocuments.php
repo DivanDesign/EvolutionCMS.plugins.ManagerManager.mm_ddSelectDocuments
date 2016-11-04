@@ -106,80 +106,6 @@ function mm_ddSelectDocuments($params){
 			$listDocs_fields = array_unique(array_merge($listDocs_fields, ['menutitle']));
 		}
 		
-		//Рекурсивно получает все необходимые документы
-		if (!function_exists('ddGetDocs')){function ddGetDocs(
-			$parentIds = [0],
-			$filter = [],
-			$depth = 1,
-			$labelMask = '[+pagetitle+] ([+id+])',
-			$fields = ['pagetitle', 'id']
-		){
-			//Получаем дочерние документы текущего уровня
-			$docs = [];
-			
-			//Перебираем всех родителей
-			foreach ($parentIds as $parent){
-				//Получаем документы текущего родителя
-				$tekDocs = ddTools::getDocumentChildrenTVarOutput($parent, $fields, 'all');
-				
-				//Если что-то получили
-				if (is_array($tekDocs)){
-					//Запомним
-					$docs = array_merge($docs, $tekDocs);
-				}
-			}
-			
-			$result = [];
-			
-			//Если что-то есть
-			if (count($docs) > 0){
-				//Перебираем полученные документы
-				foreach ($docs as $val){
-					//Если фильтр пустой, либо не пустой и документ удовлетворяет всем условиям
-					if (
-						empty($filter) ||
-						count(array_intersect_assoc($filter, $val)) == count($filter)
-					){
-						$val['title'] = empty($val['menutitle']) ? $val['pagetitle'] : $val['menutitle'];
-						
-						//Записываем результат
-						$tmp = ddTools::parseText([
-							'text' => $labelMask,
-							'data' => $val,
-							'mergeAll' => false
-						]);
-						
-						if (strlen(trim($tmp)) == 0){
-							$tmp = ddTools::parseText([
-								'text' => '[+pagetitle+] ([+id+])',
-								'data' => $val,
-								'mergeAll' => false
-							]);
-						}
-						
-						$result[] = [
-							'label' => $tmp,
-							'value' => $val['id']
-						];
-					}
-					
-					//Если ещё надо двигаться глубже
-					if ($depth > 1){
-						//Сливаем результат с дочерними документами
-						$result = array_merge($result, ddGetDocs(
-							[$val['id']],
-							$filter,
-							$depth - 1,
-							$labelMask,
-							$fields
-						));
-					}
-				}
-			}
-			
-			return $result;
-		}}
-		
 		//Получаем все дочерние документы
 		$listDocs = ddGetDocs(
 			explode(',', $params->parentIds),
@@ -206,5 +132,79 @@ $j("#tv'.$field['id'].'").ddMultipleInput({source: '.$listDocs.', max: '.(int) $
 		
 		$e->output($output);
 	}
+}
+
+//Рекурсивно получает все необходимые документы
+function ddGetDocs(
+	$parentIds = [0],
+	$filter = [],
+	$depth = 1,
+	$labelMask = '[+pagetitle+] ([+id+])',
+	$fields = ['pagetitle', 'id']
+){
+	//Получаем дочерние документы текущего уровня
+	$docs = [];
+	
+	//Перебираем всех родителей
+	foreach ($parentIds as $parent){
+		//Получаем документы текущего родителя
+		$tekDocs = ddTools::getDocumentChildrenTVarOutput($parent, $fields, 'all');
+		
+		//Если что-то получили
+		if (is_array($tekDocs)){
+			//Запомним
+			$docs = array_merge($docs, $tekDocs);
+		}
+	}
+	
+	$result = [];
+	
+	//Если что-то есть
+	if (count($docs) > 0){
+		//Перебираем полученные документы
+		foreach ($docs as $val){
+			//Если фильтр пустой, либо не пустой и документ удовлетворяет всем условиям
+			if (
+				empty($filter) ||
+				count(array_intersect_assoc($filter, $val)) == count($filter)
+			){
+				$val['title'] = empty($val['menutitle']) ? $val['pagetitle'] : $val['menutitle'];
+				
+				//Записываем результат
+				$tmp = ddTools::parseText([
+					'text' => $labelMask,
+					'data' => $val,
+					'mergeAll' => false
+				]);
+				
+				if (strlen(trim($tmp)) == 0){
+					$tmp = ddTools::parseText([
+						'text' => '[+pagetitle+] ([+id+])',
+						'data' => $val,
+						'mergeAll' => false
+					]);
+				}
+				
+				$result[] = [
+					'label' => $tmp,
+					'value' => $val['id']
+				];
+			}
+			
+			//Если ещё надо двигаться глубже
+			if ($depth > 1){
+				//Сливаем результат с дочерними документами
+				$result = array_merge($result, ddGetDocs(
+					[$val['id']],
+					$filter,
+					$depth - 1,
+					$labelMask,
+					$fields
+				));
+			}
+		}
+	}
+	
+	return $result;
 }
 ?>
