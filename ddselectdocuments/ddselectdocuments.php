@@ -1,7 +1,7 @@
 <?php
 /**
  * mm_ddSelectDocuments
- * @version 1.3 (2016-06-06)
+ * @version 1.4 (2016-11-04)
  * 
  * @desc A widget for ManagerManager that makes selection of documents ids easier.
  * 
@@ -22,7 +22,7 @@
  * @event OnDocFormPrerender
  * @event OnDocFormRender
  * 
- * @link http://code.divandesign.biz/modx/mm_ddselectdocuments/1.3
+ * @link http://code.divandesign.biz/modx/mm_ddselectdocuments/1.4
  * 
  * @copyright 2013–2016 DivanDesign {@link http://www.DivanDesign.biz }
  */
