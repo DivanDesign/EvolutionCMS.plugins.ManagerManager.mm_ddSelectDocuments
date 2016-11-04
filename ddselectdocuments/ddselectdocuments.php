@@ -107,13 +107,13 @@ function mm_ddSelectDocuments($params){
 		}
 		
 		//Получаем все дочерние документы
-		$listDocs = ddGetDocs(
-			explode(',', $params->parentIds),
-			$params->filter,
-			$params->depth,
-			$params->listItemLabelMask,
-			$listDocs_fields
-		);
+		$listDocs = mm_ddSelectDocuments_getDocsList([
+			'parentIds' => explode(',', $params->parentIds),
+			'filter' => $params->filter,
+			'depth' => $params->depth,
+			'listItemLabelMask' => $params->listItemLabelMask,
+			'docFields' => $listDocs_fields
+		]);
 		
 		if (count($listDocs) == 0){return;}
 		
@@ -134,21 +134,40 @@ $j("#tv'.$field['id'].'").ddMultipleInput({source: '.$listDocs.', max: '.(int) $
 	}
 }
 
-//Рекурсивно получает все необходимые документы
-function ddGetDocs(
-	$parentIds = [0],
-	$filter = [],
-	$depth = 1,
-	$labelMask = '[+pagetitle+] ([+id+])',
-	$fields = ['pagetitle', 'id']
-){
+/**
+ * mm_ddSelectDocuments_getDocsList
+ * @version 1.0 (2016-11-04)
+ * 
+ * @desc Рекурсивно получает все необходимые документы.
+ * 
+ * @param $params['parentIds'] {array} — ID документов-родителей. Default: [0]. 
+ * @param $params['filter'] {array_associative} — Фильтр, ключ — имя поля, значение — значение. Default: []. 
+ * @param $params['depth'] {integer} — Глубина поиска. Default: 1. 
+ * @param $params['listItemLabelMask'] {string} — Маска заголовка. Default: '[+pagetitle+] ([+id+])'. 
+ * @param $params['docFields'] {string} — Поля, которые надо получать. Default: ['pagetitle', 'id']. 
+ * 
+ * @return $result {array} — Список документов
+ * @return $result[i] {array_associative} — Элемент списка.
+ * @return $result[i]['label'] {string} — Заголовок.
+ * @return $result[i]['value'] {integer} — ID документа.
+ */
+function mm_ddSelectDocuments_getDocsList($params = []){
+	//Defaults
+	$params = (object) array_merge([
+		'parentIds' => [0],
+		'filter' => [],
+		'depth' => 1,
+		'listItemLabelMask' => '[+pagetitle+] ([+id+])',
+		'docFields' => ['pagetitle', 'id']
+	], (array) $params);
+	
 	//Получаем дочерние документы текущего уровня
 	$docs = [];
 	
 	//Перебираем всех родителей
-	foreach ($parentIds as $parent){
+	foreach ($params->parentIds as $parent){
 		//Получаем документы текущего родителя
-		$tekDocs = ddTools::getDocumentChildrenTVarOutput($parent, $fields, 'all');
+		$tekDocs = ddTools::getDocumentChildrenTVarOutput($parent, $params->docFields, 'all');
 		
 		//Если что-то получили
 		if (is_array($tekDocs)){
@@ -165,14 +184,14 @@ function ddGetDocs(
 		foreach ($docs as $val){
 			//Если фильтр пустой, либо не пустой и документ удовлетворяет всем условиям
 			if (
-				empty($filter) ||
-				count(array_intersect_assoc($filter, $val)) == count($filter)
+				empty($params->filter) ||
+				count(array_intersect_assoc($params->filter, $val)) == count($params->filter)
 			){
 				$val['title'] = empty($val['menutitle']) ? $val['pagetitle'] : $val['menutitle'];
 				
 				//Записываем результат
 				$tmp = ddTools::parseText([
-					'text' => $labelMask,
+					'text' => $params->listItemLabelMask,
 					'data' => $val,
 					'mergeAll' => false
 				]);
@@ -192,15 +211,15 @@ function ddGetDocs(
 			}
 			
 			//Если ещё надо двигаться глубже
-			if ($depth > 1){
+			if ($params->depth > 1){
 				//Сливаем результат с дочерними документами
-				$result = array_merge($result, ddGetDocs(
-					[$val['id']],
-					$filter,
-					$depth - 1,
-					$labelMask,
-					$fields
-				));
+				$result = array_merge($result, mm_ddSelectDocuments_getDocsList([
+					'parentIds' => [$val['id']],
+					'filter' => $params->filter,
+					'depth' => $params->depth - 1,
+					'listItemLabelMask' => $params->listItemLabelMask,
+					'docFields' => $params->docFields
+				]));
 			}
 		}
 	}
