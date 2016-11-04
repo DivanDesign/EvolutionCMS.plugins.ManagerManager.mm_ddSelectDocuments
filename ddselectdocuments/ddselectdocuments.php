@@ -6,7 +6,7 @@
  * @desc A widget for ManagerManager that makes selection of documents ids easier.
  * 
  * @uses PHP >= 5.4.
- * @uses MODXEvo.plugin.ManagerManager >= 0.6.
+ * @uses MODXEvo.plugin.ManagerManager >= 0.7.
  * 
  * @param $fields {string_commaSeparated} — TVs names that the widget is applied to. @required
  * @param $roles {string_commaSeparated} — Roles that the widget is applied to (when this parameter is empty then widget is applied to the all roles). Default: ''.
@@ -92,7 +92,7 @@ function mm_ddSelectDocuments(
 			//Перебираем всех родителей
 			foreach ($parentIds as $parent){
 				//Получаем документы текущего родителя
-				$tekDocs = ddTools::getDocumentChildrenTVarOutput($parent, $fields, false);
+				$tekDocs = ddTools::getDocumentChildrenTVarOutput($parent, $fields, 'all');
 				
 				//Если что-то получили
 				if (is_array($tekDocs)){
@@ -115,10 +115,18 @@ function mm_ddSelectDocuments(
 						$val['title'] = empty($val['menutitle']) ? $val['pagetitle'] : $val['menutitle'];
 						
 						//Записываем результат
-						$tmp = ddTools::parseText($labelMask, $val, '[+', '+]', false);
+						$tmp = ddTools::parseText([
+							'text' => $labelMask,
+							'data' => $val,
+							'mergeAll' => false
+						]);
 						
 						if (strlen(trim($tmp)) == 0){
-							$tmp = ddTools::parseText('[+pagetitle+] ([+id+])', $val, '[+', '+]', false);
+							$tmp = ddTools::parseText([
+								'text' => '[+pagetitle+] ([+id+])',
+								'data' => $val,
+								'mergeAll' => false
+							]);
 						}
 						
 						$result[] = [
