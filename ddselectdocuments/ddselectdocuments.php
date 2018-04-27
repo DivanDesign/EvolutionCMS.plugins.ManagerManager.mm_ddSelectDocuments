@@ -1,7 +1,7 @@
 <?php
 /**
  * mm_ddSelectDocuments
- * @version 1.5 (2016-12-20)
+ * @version 1.6 (2018-04-27)
  * 
  * @desc A widget for ManagerManager that makes selection of documents ids easier.
  * 
@@ -13,7 +13,7 @@
  * @param $params['parentIds'] {string_commaSeparated|array} — Parent documents IDs. Default: '0'.
  * @param $params['parentIds'][i] {integer|'current'} — IDs or current document Id. Default: '0'.
  * @param $params['depth'] {integer} — Depth of search. Default: 1.
- * @param $params['filter'] {separated string} — Filter clauses, separated by '&' between pairs and by '=' between keys and values. For example, 'template=15&published=1' means to choose the published documents with template id=15. Default: ''.
+ * @param $params['filter'] {separated string} — Filter clauses, separated by '&' between pairs and by '=' or '!=' between keys and values. For example, 'template=15&published=1' means to choose the published documents with template id=15. Default: ''.
  * @param $params['listItemLabelMask'] {string} — Template to be used while rendering elements of the document selection list. It is set as a string containing placeholders for document fields and TVs. Also, there is the additional placeholder “[+title+]” that is substituted with either “menutitle” (if defined) or “pagetitle”. Default: '[+title+] ([+id+])'.
  * @param $params['maxSelectedItems'] {integer} — The largest number of elements that can be selected by user (“0” means selection without a limit). Default: 0.
  * @param $params['allowDuplicates'] {boolean} — Allows to select duplicates values. Default: false.
@@ -107,13 +107,30 @@ function mm_ddSelectDocuments($params){
 		//Может быть пустым если указан current и создаем новый документ
 		if (count($params->parentIds) == 0){return;}
 		
-		$params->filter = ddTools::explodeAssoc($params->filter, '&', '=');
+		$params->filter = !empty($params->filter) ? explode("&", $params->filter) : [];
+		
+		$filter_TVnames = []; 
+		foreach($params->filter as $key => $val){
+			$preg = preg_split("/(!=)|(=)/", $val);
+			
+			if(!empty(trim($preg[0]))){
+				$params->filter[$key] = [
+					'key' => trim($preg[0]),
+					'value' => trim($preg[1]),
+					'equal' => true
+				];
+				if(strrpos($val, '!=')){
+					$params->filter[$key]['equal'] = false;
+				}
+				array_push($filter_TVnames, $params->filter[$key]['key']);
+			}
+		}
 		
 		//Необходимые поля
 		preg_match_all('~\[\+([^\+\]]*?)\+\]~', $params->listItemLabelMask, $matchField);
 		
 		$listDocs_fields = array_unique(array_merge(
-			array_keys($params->filter),
+			$filter_TVnames,
 			['pagetitle', 'id'],
 			$matchField[1]
 		));
@@ -155,12 +172,12 @@ $j("#tv'.$field['id'].'").ddMultipleInput({source: '.$listDocs.', max: '.(int) $
 
 /**
  * mm_ddSelectDocuments_getDocsList
- * @version 1.0 (2016-11-04)
+ * @version 2.0 (2018-04-27)
  * 
  * @desc Рекурсивно получает все необходимые документы.
  * 
  * @param $params['parentIds'] {array} — ID документов-родителей. Default: [0]. 
- * @param $params['filter'] {array_associative} — Фильтр, ключ — имя поля, значение — значение. Default: []. 
+ * @param $params['filter'] {array_associative} — Фильтр. Default: []. 
  * @param $params['depth'] {integer} — Глубина поиска. Default: 1. 
  * @param $params['listItemLabelMask'] {string} — Маска заголовка. Default: '[+pagetitle+] ([+id+])'. 
  * @param $params['docFields'] {string} — Поля, которые надо получать. Default: ['pagetitle', 'id']. 
@@ -201,32 +218,48 @@ function mm_ddSelectDocuments_getDocsList($params = []){
 	if (count($docs) > 0){
 		//Перебираем полученные документы
 		foreach ($docs as $val){
-			//Если фильтр пустой, либо не пустой и документ удовлетворяет всем условиям
+			//Если фильтр не пустой
 			if (
-				empty($params->filter) ||
-				count(array_intersect_assoc($params->filter, $val)) == count($params->filter)
+				!empty($params->filter)
 			){
-				$val['title'] = empty($val['menutitle']) ? $val['pagetitle'] : $val['menutitle'];
+				$filterCount = 0;
+				//удовлетворяет ли документ всем условиям фильтра
+				foreach($params->filter as $filter){
+					if(
+						$filter['equal'] &&
+						$val[$filter['key']] == $filter['value']
+					){
+						$filterCount++;
+					}elseif(
+						!$filter['equal'] &&
+						$val[$filter['key']] != $filter['value']){
+						$filterCount++;
+					}
+				}
 				
-				//Записываем результат
-				$tmp = ddTools::parseText([
-					'text' => $params->listItemLabelMask,
-					'data' => $val,
-					'mergeAll' => false
-				]);
-				
-				if (strlen(trim($tmp)) == 0){
+				if($filterCount == count($params->filter)){
+					$val['title'] = empty($val['menutitle']) ? $val['pagetitle'] : $val['menutitle'];
+					
+					//Записываем результат
 					$tmp = ddTools::parseText([
-						'text' => '[+pagetitle+] ([+id+])',
+						'text' => $params->listItemLabelMask,
 						'data' => $val,
 						'mergeAll' => false
 					]);
+					
+					if(strlen(trim($tmp)) == 0){
+						$tmp = ddTools::parseText([
+							'text' => '[+pagetitle+] ([+id+])',
+							'data' => $val,
+							'mergeAll' => false
+						]);
+					}
+					
+					$result[] = [
+						'label' => $tmp,
+						'value' => $val['id']
+					];
 				}
-				
-				$result[] = [
-					'label' => $tmp,
-					'value' => $val['id']
-				];
 			}
 			
 			//Если ещё надо двигаться глубже
