@@ -219,10 +219,10 @@ function mm_ddSelectDocuments($params){
 			return;
 		}
 		
-		$listDocs = json_encode(
-			$listDocs,
-			JSON_UNESCAPED_UNICODE
-		);
+		$listDocs = \DDTools\ObjectTools::convertType([
+			'object' => $listDocs,
+			'type' => 'stringJsonAuto'
+		]);
 		
 		$output .= '//---------- mm_ddSelectDocuments :: Begin -----' . PHP_EOL;
 		
