@@ -35,21 +35,23 @@ function mm_ddSelectDocuments($params){
 		]);
 	}
 	
-	//Defaults
-	$params = (object) array_merge(
-		[
-			'fields' => '',
-			'parentIds' => '0',
-			'depth' => 1,
-			'filter' => '',
-			'listItemLabelMask' => '[+title+] ([+id+])',
-			'maxSelectedItems' => 0,
-			'allowDuplicates' => false,
-			'roles' => '',
-			'templates' => ''
-		],
-		(array) $params
-	);
+	$params = \DDTools\ObjectTools::extend([
+		'objects' => [
+			//Defaults
+			(object) [
+				'fields' => '',
+				'parentIds' => '0',
+				'depth' => 1,
+				'filter' => '',
+				'listItemLabelMask' => '[+title+] ([+id+])',
+				'maxSelectedItems' => 0,
+				'allowDuplicates' => false,
+				'roles' => '',
+				'templates' => ''
+			],
+			$params
+		]
+	]);
 	
 	if (
 		!useThisRule(
@@ -246,15 +248,16 @@ $j("#tv' . $field['id'] . '").ddMultipleInput({
 
 /**
  * mm_ddSelectDocuments_getDocsList
- * @version 2.0.1 (2022-04-14)
+ * @version 2.0.2 (2022-04-14)
  * 
  * @desc Рекурсивно получает все необходимые документы.
  * 
- * @param $params['parentIds'] {array} — ID документов-родителей. Default: [0]. 
- * @param $params['filter'] {arrayAssociative} — Фильтр. Default: []. 
- * @param $params['depth'] {integer} — Глубина поиска. Default: 1. 
- * @param $params['listItemLabelMask'] {string} — Маска заголовка. Default: '[+pagetitle+] ([+id+])'. 
- * @param $params['docFields'] {string} — Поля, которые надо получать. Default: ['pagetitle', 'id']. 
+ * @param $params {stdClass|arrayAssociative} — Parameters, the pass-by-name style is used. @required
+ * @param $params->parentIds {array} — ID документов-родителей. Default: [0]. 
+ * @param $params->filter {arrayAssociative} — Фильтр. Default: []. 
+ * @param $params->depth {integer} — Глубина поиска. Default: 1. 
+ * @param $params->listItemLabelMask {string} — Маска заголовка. Default: '[+pagetitle+] ([+id+])'. 
+ * @param $params->docFields {string} — Поля, которые надо получать. Default: ['pagetitle', 'id']. 
  * 
  * @return $result {array} — Список документов
  * @return $result[$i] {arrayAssociative} — Элемент списка.
@@ -262,17 +265,19 @@ $j("#tv' . $field['id'] . '").ddMultipleInput({
  * @return $result[$i]['value'] {integer} — ID документа.
  */
 function mm_ddSelectDocuments_getDocsList($params = []){
-	//Defaults
-	$params = (object) array_merge(
-		[
-			'parentIds' => [0],
-			'filter' => [],
-			'depth' => 1,
-			'listItemLabelMask' => '[+pagetitle+] ([+id+])',
-			'docFields' => ['pagetitle', 'id']
-		],
-		(array) $params
-	);
+	$params = \DDTools\ObjectTools::extend([
+		'objects' => [
+			//Defaults
+			(object) [
+				'parentIds' => [0],
+				'filter' => [],
+				'depth' => 1,
+				'listItemLabelMask' => '[+pagetitle+] ([+id+])',
+				'docFields' => ['pagetitle', 'id']
+			],
+			$params
+		]
+	]);
 	
 	//Получаем дочерние документы текущего уровня
 	$docs = [];
