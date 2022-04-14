@@ -1,13 +1,13 @@
 <?php
 /**
  * mm_ddSelectDocuments
- * @version 1.6 (2018-04-27)
+ * @version 1.6 (2022-04-14)
  * 
  * @see README.md
  * 
  * @link https://code.divandesign.biz/modx/mm_ddselectdocuments
  * 
- * @copyright 2013–2016 DD Group {@link https://DivanDesign.biz }
+ * @copyright 2013–2022 DD Group {@link https://DivanDesign.biz }
  */
 
 function mm_ddSelectDocuments($params){

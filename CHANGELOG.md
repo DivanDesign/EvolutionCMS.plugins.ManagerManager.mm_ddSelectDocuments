@@ -1,6 +1,18 @@
 # (MODX)EvolutionCMS.plugins.ManagerManager.mm_ddSelectDocuments changelog
 
 
+## Version 1.6 (2022-04-14)
+* \+ Parameters → `filter`: Supports the not-equal-to operator.
+* \* Refactoring:
+	* \* `\DDTools\ObjectTools::extend` is used instead of `array_merge`.
+	* \* `\DDTools\ObjectTools::convertType` is used instead of `json_encode`.
+* \+ Composer.json.
+* \+ README.
+* \+ README_ru.
+* \+ CHANGELOG.
+* \+ CHANGELOG_ru.
+
+
 ## Version 1.5 (2016-12-20)
 * \+ Parameters → `$params->parentIds[$i]`: Can be equal to `'current'` for using ID of current document.
 

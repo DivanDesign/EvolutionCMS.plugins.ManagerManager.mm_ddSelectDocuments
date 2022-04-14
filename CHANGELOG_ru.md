@@ -1,6 +1,18 @@
 # (MODX)EvolutionCMS.snippets.ddStartSnippet changelog
 
 
+## Версия 1.6 (2022-04-14)
+* \+ Параметры → `filter`: Поддерживает оператор неравенства.
+* \* Рефакторинг:
+	* \* `\DDTools\ObjectTools::extend` используется вместо `array_merge`.
+	* \* `\DDTools\ObjectTools::convertType` используется вместо `json_encode`.
+* \+ Composer.json.
+* \+ README.
+* \+ README_ru.
+* \+ CHANGELOG.
+* \+ CHANGELOG_ru.
+
+
 ## Версия 1.5 (2016-12-20)
 * \+ Параметры → `$params->parentIds[$i]`: Может принимать значение `'current'` для использования ID текущего документа.
 
