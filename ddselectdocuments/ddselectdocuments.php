@@ -3,25 +3,7 @@
  * mm_ddSelectDocuments
  * @version 1.6 (2018-04-27)
  * 
- * @desc A widget for ManagerManager that makes selection of documents ids easier.
- * 
- * @uses PHP >= 5.4.
- * @uses (MODX)EvolutionCMS.plugins.ManagerManager >= 0.7.
- * 
- * @param $params {arrayAssociative|stdClass} — The object of params. @required
- * @param $params->fields {stringCommaSeparated|array} — TVs names that the widget is applied to. @required
- * @param $params->parentIds {stringCommaSeparated|array} — Parent documents IDs. Default: '0'.
- * @param $params->parentIds[$i] {integer|'current'} — IDs or current document Id. Default: '0'.
- * @param $params->depth {integer} — Depth of search. Default: 1.
- * @param $params->filter {stringSeparated} — Filter clauses, separated by '&' between pairs and by '=' or '!=' between keys and values. For example, 'template=15&published=1' means to choose the published documents with template id=15. Default: ''.
- * @param $params->listItemLabelMask {string} — Template to be used while rendering elements of the document selection list. It is set as a string containing placeholders for document fields and TVs. Also, there is the additional placeholder “[+title+]” that is substituted with either “menutitle” (if defined) or “pagetitle”. Default: '[+title+] ([+id+])'.
- * @param $params->maxSelectedItems {integer} — The largest number of elements that can be selected by user (“0” means selection without a limit). Default: 0.
- * @param $params->allowDuplicates {boolean} — Allows to select duplicates values. Default: false.
- * @param $params->roles {stringCommaSeparated} — Roles that the widget is applied to (when this parameter is empty then widget is applied to the all roles). Default: ''.
- * @param $params->templates {stringCommaSeparated} — Templates IDs for which the widget is applying (empty value means the widget is applying to all templates). Default: ''.
- * 
- * @event OnDocFormPrerender
- * @event OnDocFormRender
+ * @see README.md
  * 
  * @link https://code.divandesign.biz/modx/mm_ddselectdocuments
  * 
