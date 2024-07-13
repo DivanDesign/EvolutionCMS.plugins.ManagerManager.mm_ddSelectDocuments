@@ -248,7 +248,7 @@ $j("#tv' . $field['id'] . '").ddMultipleInput({
 
 /**
  * mm_ddSelectDocuments_getDocsList
- * @version 2.0.2 (2022-04-14)
+ * @version 2.0.3 (2024-07-13)
  * 
  * @desc Рекурсивно получает все необходимые документы.
  * 
@@ -345,14 +345,14 @@ function mm_ddSelectDocuments_getDocsList($params = []){
 					$tmp = \ddTools::parseText([
 						'text' => $params->listItemLabelMask,
 						'data' => $val,
-						'mergeAll' => false
+						'isCompletelyParsingEnabled' => false
 					]);
 					
 					if(strlen(trim($tmp)) == 0){
 						$tmp = \ddTools::parseText([
 							'text' => '[+pagetitle+] ([+id+])',
 							'data' => $val,
-							'mergeAll' => false
+							'isCompletelyParsingEnabled' => false
 						]);
 					}
 					
