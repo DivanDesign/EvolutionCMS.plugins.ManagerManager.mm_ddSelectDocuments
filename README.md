@@ -115,16 +115,16 @@ You may also read this documentation:
 
 ```php
 mm_ddSelectDocuments([
-	//TV for which the widget is applied to
+	// TV for which the widget is applied to
 	'fields' => 'favoriteProducts',
-	//Let 314 is ID of catalog document, that contains children-products
+	// Let 314 is ID of catalog document, that contains children-products
 	'parentIds' => [314],
-	//Search in 3 levels
+	// Search in 3 levels
 	'depth' => 3,
-	//Display only published documents with template ID == 42
+	// Display only published documents with template ID == 42
 	'filter' => 'template=42&published=1',
-	//Only 3 or less products can be selected
-	'maxSelectedItems' => 3
+	// Only 3 or less products can be selected
+	'maxSelectedItems' => 3,
 ]);
 ```
 
