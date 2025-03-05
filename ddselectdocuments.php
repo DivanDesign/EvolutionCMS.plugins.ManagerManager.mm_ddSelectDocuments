@@ -246,7 +246,7 @@ $j("#tv' . $field['id'] . '").ddMultipleInput({
 
 /**
  * mm_ddSelectDocuments_getDocsList
- * @version 2.0.4 (2024-08-06)
+ * @version 2.0.5 (2025-03-05)
  * 
  * @desc Рекурсивно получает все необходимые документы.
  * 
@@ -314,6 +314,8 @@ function mm_ddSelectDocuments_getDocsList($params = []){
 			$docs
 			as $val
 		){
+			$isMatched = true;
+			
 			// Если фильтр не пустой
 			if (!empty($params->filter)){
 				$filterCount = 0;
@@ -336,33 +338,35 @@ function mm_ddSelectDocuments_getDocsList($params = []){
 					}
 				}
 				
-				if($filterCount == count($params->filter)){
-					$val['title'] =
-						empty($val['menutitle'])
-						? $val['pagetitle']
-						: $val['menutitle']
-					;
-					
-					// Записываем результат
+				$isMatched = $filterCount == count($params->filter);
+			}
+			
+			if ($isMatched){
+				$val['title'] =
+					empty($val['menutitle'])
+					? $val['pagetitle']
+					: $val['menutitle']
+				;
+				
+				// Записываем результат
+				$tmp = \ddTools::parseText([
+					'text' => $params->listItemLabelMask,
+					'data' => $val,
+					'isCompletelyParsingEnabled' => false,
+				]);
+				
+				if(strlen(trim($tmp)) == 0){
 					$tmp = \ddTools::parseText([
-						'text' => $params->listItemLabelMask,
+						'text' => '[+pagetitle+] ([+id+])',
 						'data' => $val,
 						'isCompletelyParsingEnabled' => false,
 					]);
-					
-					if(strlen(trim($tmp)) == 0){
-						$tmp = \ddTools::parseText([
-							'text' => '[+pagetitle+] ([+id+])',
-							'data' => $val,
-							'isCompletelyParsingEnabled' => false,
-						]);
-					}
-					
-					$result[] = [
-						'label' => $tmp,
-						'value' => $val['id'],
-					];
 				}
+				
+				$result[] = [
+					'label' => $tmp,
+					'value' => $val['id'],
+				];
 			}
 			
 			// Если ещё надо двигаться глубже
