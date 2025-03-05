@@ -5,9 +5,9 @@
  * 
  * @see README.md
  * 
- * @link https://code.divandesign.biz/modx/mm_ddselectdocuments
+ * @link https://code.divandesign.ru/modx/mm_ddselectdocuments
  * 
- * @copyright 2013–2022 DD Group {@link https://DivanDesign.biz }
+ * @copyright 2013–2022 Ronef {@link https://Ronef.me }
  */
 
 function mm_ddSelectDocuments($params){
