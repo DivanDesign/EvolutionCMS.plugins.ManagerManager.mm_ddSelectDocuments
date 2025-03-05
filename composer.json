@@ -1,6 +1,6 @@
 {
 	"name": "dd/evolutioncms-plugins-managermanager-mm_ddselectdocuments",
-	"version": "1.6.0",
+	"version": "1.6.1",
 	"description": "A widget for ManagerManager that makes selection of documents IDs easier.",
 	"keywords": [
 		"modx",

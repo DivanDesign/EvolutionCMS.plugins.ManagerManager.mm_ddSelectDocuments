@@ -1,6 +1,11 @@
 # (MODX)EvolutionCMS.plugins.ManagerManager.mm_ddSelectDocuments changelog
 
 
+## Version 1.6.1 (2025-03-05)
+
+* \* Fixed error with empty list when `$params->depth` == `1`.
+
+
 ## Version 1.6 (2022-04-14)
 
 * \+ Parameters → `filter`: Supports the not-equal-to operator.

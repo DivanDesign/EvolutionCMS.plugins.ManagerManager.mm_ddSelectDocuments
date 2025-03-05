@@ -1,6 +1,11 @@
 # (MODX)EvolutionCMS.plugins.ManagerManager.mm_ddSelectDocuments changelog
 
 
+## Версия 1.6.1 (2025-03-05)
+
+* \* Исправлена ошибка с пустым списком при `$params->depth` == `1`.
+
+
 ## Версия 1.6 (2022-04-14)
 
 * \+ Параметры → `filter`: Поддерживает оператор неравенства.
